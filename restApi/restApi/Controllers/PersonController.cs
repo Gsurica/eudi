@@ -5,7 +5,7 @@ using restApi.Services;
 namespace restApi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class PersonController : ControllerBase {
 
     private readonly ILogger<PersonController> _logger;
