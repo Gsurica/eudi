@@ -14,7 +14,7 @@ public class CalculatorController : ControllerBase {
 
     [HttpGet("sum/{firstNumber}/{secondNumber}")]
     public IActionResult Get(string firstNumber, string secondNumber) {
-        if (IsNumeric(firstNumber) && IsNumeric(secondNumber)) {
+        if (VerifyNumbers(firstNumber, secondNumber)) {
             var sum = ConvertToDecimal(firstNumber) + ConvertToDecimal(secondNumber);
             return Ok(sum.ToString());
         }
@@ -23,10 +23,7 @@ public class CalculatorController : ControllerBase {
 
     [HttpGet("sub/{firstNumber}/{secondNumber}")]
     public IActionResult GetSub(string firstNumber, string secondNumber) {
-        if (firstNumber == null || secondNumber == null) {
-            return BadRequest("Input musnt be null!");
-        }
-        if (IsNumeric(firstNumber) && IsNumeric(secondNumber)) {
+        if (VerifyNumbers(firstNumber, secondNumber)) {
             var sub = ConvertToDecimal(firstNumber) - ConvertToDecimal(secondNumber);
             return Ok(sub.ToString());
         }
@@ -34,7 +31,41 @@ public class CalculatorController : ControllerBase {
     }
 
     [HttpGet("mul/{firstNumber}/{secondNumber}")]
-    public IActionResult GetMul(string fistNumber, string secondNumber) {
+    public IActionResult GetMul(string firstNumber, string secondNumber) {
+        if (VerifyNumbers(firstNumber, secondNumber)) {
+            var mult = ConvertToDecimal(firstNumber) * ConvertToDecimal(secondNumber);
+            return Ok(mult.ToString());
+        }
+        return BadRequest("Invalid Input!");
+    }
+
+    [HttpGet("div/{firstNumber}/{secondNumber}")]
+    public IActionResult GetDiv(string firstNumber, string secondNumber) {
+        if (!VerifyZero(firstNumber) || !VerifyZero(secondNumber)) {
+            return BadRequest("Cannot divide a number with zero!");
+        }
+        if (VerifyNumbers(firstNumber, secondNumber)) {
+            var div = ConvertToDecimal(firstNumber) / ConvertToDecimal(secondNumber);
+            return Ok(div.ToString());           
+        }
+        return BadRequest("Invalid input!");
+    }
+
+    [HttpGet("pow/{firstNumber}/{secondNumber}")]
+    public IActionResult GetPow(string firstNumber, string secondNumber) {
+        if (VerifyNumbers(firstNumber, secondNumber)) {
+            var pow = Math.Pow(ConvertToDouble(firstNumber), ConvertToDouble(secondNumber));
+            return Ok(pow.ToString());
+        }
+        return BadRequest("Invalid Input!");    
+    }
+
+    [HttpGet("sqr/{squareRoot}")]
+    public IActionResult GetSqr(string squareRoot) {
+        if (VerifyNumber(squareRoot)) {
+            var sqr = Math.Sqrt(ConvertToDouble(squareRoot));
+            return Ok(sqr.ToString());
+        }
         return BadRequest("Invalid Input!");
     }
 
@@ -53,5 +84,35 @@ public class CalculatorController : ControllerBase {
             return decimalValue;
         }
         return 0;
+    }
+
+    private static double ConvertToDouble(string strNumber) {
+        double doubleNumber;
+        if (double.TryParse(strNumber, out doubleNumber)) {
+            return doubleNumber;
+        }
+        return 0;
+    }
+
+    private static bool VerifyZero(string strNumber) {
+        var convertedNumber = ConvertToDecimal(strNumber);
+        if (convertedNumber != 0) {
+            return true;
+        }
+        return false;
+    }
+
+    private static bool VerifyNumbers(string strNumber1, string strNumber2) {
+        if (IsNumeric(strNumber1) && IsNumeric(strNumber2)) {
+            return true;
+        }
+        return false;
+    }
+
+    private static bool VerifyNumber(string number) {
+        if (IsNumeric(number)) {
+            return true;
+        }
+        return false;
     }
 }
